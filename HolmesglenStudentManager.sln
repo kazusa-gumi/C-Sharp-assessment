@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HolmesglenStudentManager", "HolmesglenStudentManager\HolmesglenStudentManager.csproj", "{3E27895B-E21B-43A6-B5ED-F60A467F8967}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{4374F171-7B47-4088-88A5-59C32D7064D2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E27895B-E21B-43A6-B5ED-F60A467F8967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E27895B-E21B-43A6-B5ED-F60A467F8967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E27895B-E21B-43A6-B5ED-F60A467F8967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E27895B-E21B-43A6-B5ED-F60A467F8967}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9CF51C14-67F9-4929-9191-97E7D3DB58BB}
+	EndGlobalSection
+EndGlobal
