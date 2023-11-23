@@ -14,6 +14,13 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
             _db = appDBContext;
         }
 
+        public bool ValidateSubjectId(string subjectId)
+        {
+            // データベースから科目IDを使って科目を検索
+            var existingSubject = _db.Subject.FirstOrDefault(s => s.SubjectId == subjectId);
+            // 科目が存在すれば true, そうでなければ false を返す
+            return existingSubject != null;
+        }
         // すべての科目を取得するメソッド
         public List<Subject> GetAllSubjects()
         {

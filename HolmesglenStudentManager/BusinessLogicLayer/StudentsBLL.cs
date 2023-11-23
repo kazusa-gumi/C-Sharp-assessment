@@ -9,65 +9,88 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
 {
     public class StudentBLL
     {
+        // Database context to interact with the database
         private AppDBContext _db;
 
+        // Constructor initializing the database context
         public StudentBLL(AppDBContext appDBContext)
         {
             _db = appDBContext;
         }
 
-        // すべての学生を取得するメソッド
+        public bool ValidateStudentID(string studenteId)
+        {
+            // データベースから科目IDを使って科目を検索
+            var existingStudent = _db.Student.FirstOrDefault(s => s.StudentId == studenteId);
+            // 科目が存在すれば true, そうでなければ false を返す
+            return existingStudent != null;
+        }
+        // Retrieve all students from the database
         public List<Student> GetAllStudents()
         {
+            // Converts the collection of students to a list and returns it
             return _db.Student.ToList();
         }
 
-        // IDによって特定の学生を取得するメソッド
+        // Fetch a single student by their ID
         public Student GetStudentById(string id)
         {
-            return _db.Student.FirstOrDefault(s => s.StudentId == id); // IdをStudentIdに変更
+            // Searches the first student with matching StudentId or returns null if not found
+            return _db.Student.FirstOrDefault(s => s.StudentId == id);
         }
 
-        // 新しい学生を追加するメソッド
+        // Add a new student to the database
         public bool AddStudent(Student newStudent)
         {
+            // Check if a student already exists with the same StudentId
             var existingStudent = _db.Student.FirstOrDefault(s => s.StudentId == newStudent.StudentId);
             if (existingStudent == null)
             {
+                // If the student does not exist, add the new student to the database
                 _db.Student.Add(newStudent);
+                // Save changes to the database
                 _db.SaveChanges();
-                return true; // 追加成功
+                return true; // Return true to signify a successful add operation
             }
-            return false; // すでに同じIDの学生が存在するため追加失敗
+            // If the student already exists, return false to indicate a failed add operation
+            return false;
         }
 
-        // 学生情報を更新するメソッド
+        // Update existing student information
         public bool UpdateStudent(Student student)
         {
+            // Find the student that matches the StudentId
             var studentToUpdate = _db.Student.FirstOrDefault(s => s.StudentId == student.StudentId);
             if (studentToUpdate != null)
             {
+                // Update the student's properties if found
                 studentToUpdate.FirstName = student.FirstName;
                 studentToUpdate.LastName = student.LastName;
                 studentToUpdate.Email = student.Email;
+                // Save changes to the database
                 _db.SaveChanges();
-                return true; // 更新成功
+                return true; // Return true to indicate success
             }
-            return false; // 学生が見つからないため更新失敗
+            // If the student is not found, return false to indicate a failed update operation
+            return false;
         }
 
-        // 学生を削除するメソッド
+        // Delete a student from the database by their ID
         public bool DeleteStudent(string id)
         {
+            // Find the student that matches the ID
             var studentToDelete = _db.Student.FirstOrDefault(s => s.StudentId == id);
             if (studentToDelete != null)
             {
+                // If found, remove the student from the database
                 _db.Student.Remove(studentToDelete);
+                // Save changes to the database
                 _db.SaveChanges();
-                return true; // 削除成功
+                return true; // Return true to indicate success
             }
-            return false; // 学生が見つからないため削除失敗
+            // If the student is not found, return false to indicate a failed delete operation
+            return false;
         }
-
     }
 }
+
