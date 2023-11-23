@@ -78,11 +78,11 @@ namespace HolmesglenStudentManager
             Console.WriteLine("Thank you for using Holmesglen Student Management System.");
         }
 
-        static void TestSQLiteConnection()
-        {
-            var sqliteDataAccess = new SQLiteDataAccess();
-            sqliteDataAccess.TestConnection();
-        }
+        //static void TestSQLiteConnection()
+        //{
+        //    var sqliteDataAccess = new SQLiteDataAccess();
+        //    sqliteDataAccess.TestConnection();
+        //}
         // Method to display the sutudent operations menu
         static void DisplayStudentMenu(StudentBLL studentBLL)
         {
@@ -415,7 +415,7 @@ namespace HolmesglenStudentManager
                             var enrollmentToUpdate = enrollmentBLL.GetEnrollmentById(enrollmentId);
                             if (enrollmentToUpdate != null)
                             {
-                                // 現在の登録情報を表示
+                                
                                 Console.WriteLine($"Current Student ID: {enrollmentToUpdate.StudentID_FK}, Current Subject ID: {enrollmentToUpdate.SubjectID_FK}");
 
                                 Console.Write("Enter new student ID (leave blank for no change): ");
@@ -449,9 +449,6 @@ namespace HolmesglenStudentManager
                                         break;
                                     }
                                 }
-
-                                // EnrollmentBLLクラスのUpdateEnrollmentメソッドを呼び出す
-                                // 成功した場合true、失敗した場合falseを返す
                                 if (enrollmentBLL.UpdateEnrollment(enrollmentToUpdate, studentBLL, subjectBLL))
                                 {
                                     Console.WriteLine("Enrollment updated successfully.");
@@ -514,32 +511,38 @@ namespace HolmesglenStudentManager
         // Method to import student data from CSV
         static void ImportStudentsFromCsv(StudentBLL studentBLL)
         {
+            // Ask the user to enter the full path to the CSV file
             Console.Write("Enter the full path to the CSV file to import: ");
             string csvFilePath = Console.ReadLine();
 
-            // Check if the file specified exists
+            // Check if the specified file exists
             if (!File.Exists(csvFilePath))
             {
+                // If the file does not exist, issue a warning and exit the method
                 Console.WriteLine("File does not exist.");
                 return;
             }
-
             try
             {
+                // Open file reader and pass to CSV reader
                 using (var reader = new StreamReader(csvFilePath))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
+                    // Read records from a CSV file
                     var records = csv.GetRecords<Student>();
+                    // Process for each record
                     foreach (var record in records)
                     {
+                        // Add imported student data
                         studentBLL.AddStudent(record);
                     }
                 }
-
+                // Inform user that all student data has been successfully imported
                 Console.WriteLine("Students imported successfully.");
             }
             catch (Exception ex)
             {
+                // Display errors, if any, in the console
                 Console.WriteLine("An error occurred while importing students: " + ex.Message);
             }
         }
@@ -558,7 +561,6 @@ namespace HolmesglenStudentManager
                     var students = studentBLL.GetAllStudents();
                     csv.WriteRecords(students);
                 }
-
                 Console.WriteLine("Students exported successfully.");
             }
             catch (Exception ex)
