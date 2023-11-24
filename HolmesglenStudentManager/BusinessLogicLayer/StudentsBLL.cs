@@ -1,96 +1,80 @@
-﻿using HolmesglenStudentManager.Models;
-using System;
+﻿// StudentBLL.cs - 修正版
+using HolmesglenStudentManager.DataAccess;
+using HolmesglenStudentManager.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HolmesglenStudentManager.BusinessLogicLayer
 {
     public class StudentBLL
     {
-        // Database context to interact with the database
-        private AppDBContext _db;
+        private readonly StudentDAL _studentDal;
 
-        // Constructor initializing the database context
-        public StudentBLL(AppDBContext appDBContext)
+        public StudentBLL(StudentDAL studentDal)
         {
-            _db = appDBContext;
+            _studentDal = studentDal;
         }
 
-        public bool ValidateStudentID(string studenteId)
+        public bool ValidateStudentId(int studentId)
         {
-            // データベースから科目IDを使って科目を検索
-            var existingStudent = _db.Student.FirstOrDefault(s => s.StudentId == studenteId);
-            // 科目が存在すれば true, そうでなければ false を返す
-            return existingStudent != null;
+            // 接続メソッドと型が一致するよう修正
+            return _studentDal.ValidateStudentId(studentId);
         }
-        // Retrieve all students from the database
+
         public List<Student> GetAllStudents()
         {
-            // Converts the collection of students to a list and returns it
-            return _db.Student.ToList();
+            // 変更なし
+            return _studentDal.GetAllStudents();
         }
 
-        // Fetch a single student by their ID
-        public Student GetStudentById(string id)
+        public Student GetStudentById(int id)
         {
-            // Searches the first student with matching StudentId or returns null if not found
-            return _db.Student.FirstOrDefault(s => s.StudentId == id);
+            // id を int 型として扱うよう修正
+            return _studentDal.GetStudentById(id);
         }
 
-        // Add a new student to the database
         public bool AddStudent(Student newStudent)
         {
-            // Check if a student already exists with the same StudentId
-            var existingStudent = _db.Student.FirstOrDefault(s => s.StudentId == newStudent.StudentId);
-            if (existingStudent == null)
+            // Student クラスが int 型の StudentId を持っていればこのメソッドはそのままで正しい
+            // それによって ValidateStudentId も正しい形式で呼び出される
+            if (!_studentDal.ValidateStudentId(newStudent.StudentId))
             {
-                // If the student does not exist, add the new student to the database
-                _db.Student.Add(newStudent);
-                // Save changes to the database
-                _db.SaveChanges();
-                return true; // Return true to signify a successful add operation
+                _studentDal.AddStudent(newStudent);
+                return true;
             }
-            // If the student already exists, return false to indicate a failed add operation
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
-        // Update existing student information
-        public bool UpdateStudent(Student student)
+        public bool UpdateStudent(Student existingStudent)
         {
-            // Find the student that matches the StudentId
-            var studentToUpdate = _db.Student.FirstOrDefault(s => s.StudentId == student.StudentId);
+            // Student クラスとの整合性を取るために修正
+            var studentToUpdate = _studentDal.GetStudentById(existingStudent.StudentId);
             if (studentToUpdate != null)
             {
-                // Update the student's properties if found
-                studentToUpdate.FirstName = student.FirstName;
-                studentToUpdate.LastName = student.LastName;
-                studentToUpdate.Email = student.Email;
-                // Save changes to the database
-                _db.SaveChanges();
-                return true; // Return true to indicate success
+                _studentDal.UpdateStudent(existingStudent);
+                return true;
             }
-            // If the student is not found, return false to indicate a failed update operation
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
-        // Delete a student from the database by their ID
-        public bool DeleteStudent(string id)
+        public bool DeleteStudent(int studentId)
         {
-            // Find the student that matches the ID
-            var studentToDelete = _db.Student.FirstOrDefault(s => s.StudentId == id);
+            // studentId を int 型として扱うよう修正
+            var studentToDelete = _studentDal.GetStudentById(studentId);
             if (studentToDelete != null)
             {
-                // If found, remove the student from the database
-                _db.Student.Remove(studentToDelete);
-                // Save changes to the database
-                _db.SaveChanges();
-                return true; // Return true to indicate success
+                _studentDal.DeleteStudent(studentId);
+                return true;
             }
-            // If the student is not found, return false to indicate a failed delete operation
-            return false;
+            else
+            {
+                return false;
+            }
         }
     }
 }
-

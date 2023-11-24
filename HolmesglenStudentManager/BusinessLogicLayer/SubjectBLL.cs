@@ -1,78 +1,62 @@
-﻿using HolmesglenStudentManager.Models;
-using System;
+﻿using HolmesglenStudentManager.DataAccess;
+using HolmesglenStudentManager.Models;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HolmesglenStudentManager.BusinessLogicLayer
 {
     public class SubjectBLL
     {
-        private AppDBContext _db;
+        private readonly SubjectDAL _subjectDal;
 
-        public SubjectBLL(AppDBContext appDBContext)
+        public SubjectBLL(SubjectDAL subjectDal)
         {
-            _db = appDBContext;
+            _subjectDal = subjectDal;
         }
 
-        public bool ValidateSubjectId(string subjectId)
+        public bool ValidateSubjectId(int subjectId) // stringからintへ変更
         {
-            // データベースから科目IDを使って科目を検索
-            var existingSubject = _db.Subject.FirstOrDefault(s => s.SubjectId == subjectId);
-            // 科目が存在すれば true, そうでなければ false を返す
-            return existingSubject != null;
+            return _subjectDal.ValidateSubjectId(subjectId);
         }
-        // すべての科目を取得するメソッド
+
         public List<Subject> GetAllSubjects()
         {
-            return _db.Subject.ToList();
+            return _subjectDal.GetAllSubjects();
         }
 
-        // IDによって特定の科目を取得するメソッド
-        public Subject GetSubjectById(string id)
+        public Subject GetSubjectById(int id)
         {
-            return _db.Subject.FirstOrDefault(s => s.SubjectId == id);
+            // id を int 型として扱うよう修正
+            return _subjectDal.GetSubjectById(id);
         }
 
-        // 新しい科目を追加するメソッド
         public bool AddSubject(Subject newSubject)
         {
-            var existingSubject = _db.Subject.FirstOrDefault(s => s.SubjectId == newSubject.SubjectId);
-            if (existingSubject == null)
+            if (!ValidateSubjectId(newSubject.SubjectId))
             {
-                _db.Subject.Add(newSubject);
-                _db.SaveChanges();
-                return true; // 追加成功
+                _subjectDal.AddSubject(newSubject);
+                return true;
             }
-            return false; // すでに同じIDの科目が存在するため追加失敗
+            return false;
         }
 
-        // 科目情報を更新するメソッド
         public bool UpdateSubject(Subject subject)
         {
-            var subjectToUpdate = _db.Subject.FirstOrDefault(s => s.SubjectId == subject.SubjectId);
-            if (subjectToUpdate != null)
+            if (_subjectDal.GetSubjectById(subject.SubjectId) != null) // stringからintへ変更
             {
-                subjectToUpdate.Title = subject.Title;
-                subjectToUpdate.NumberOfSession = subject.NumberOfSession; // 更新
-                subjectToUpdate.HourPerSession = subject.HourPerSession; // 更新
-                _db.SaveChanges();
-                return true; // 更新成功
+                _subjectDal.UpdateSubject(subject);
+                return true;
             }
-            return false; // 科目が見つからないため更新失敗
+            return false;
         }
 
-        // 科目を削除するメソッド
-        public bool DeleteSubject(string id)
+        public bool DeleteSubject(int id) // stringからintへ変更
         {
-            var subjectToDelete = _db.Subject.FirstOrDefault(s => s.SubjectId == id);
-            if (subjectToDelete != null)
+            if (_subjectDal.GetSubjectById(id) != null)
             {
-                _db.Subject.Remove(subjectToDelete);
-                _db.SaveChanges();
-                return true; // 削除成功
+                _subjectDal.DeleteSubject(id);
+                return true;
             }
-            return false; // 科目が見つからないため削除失敗
+            return false;
         }
     }
-
 }

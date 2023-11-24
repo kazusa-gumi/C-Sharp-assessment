@@ -4,6 +4,8 @@ using HolmesglenStudentManager.BusinessLogicLayer;
 using HolmesglenStudentManager.Models;
 using static System.Collections.Specialized.BitVector32;
 using HolmesglenStudentManager.DataAccess;
+using HolmesglenStudentManager.PresentationLayer;
+
 
 namespace HolmesglenStudentManager
 {
@@ -16,11 +18,14 @@ namespace HolmesglenStudentManager
 
             // Initialize the database context
             var db = new AppDBContext();
+            var studentDal = new StudentDAL(db);
             // SQLiteDataAccess
             // TestSQLiteConnection();
-            // Create instances of the Business Logic Layer for students, subjects, and enrollments
-            var studentBLL = new StudentBLL(db);
-            var subjectBLL = new SubjectBLL(db);
+            var studentBLL = new StudentBLL(studentDal);
+            var studentUI = new StudentUI(studentBLL);
+            var subjectDal = new SubjectDAL(db);
+            var subjectBLL = new SubjectBLL(subjectDal);
+            var subjectUI = new SubjectUI(subjectBLL);
             var enrollmentBLL = new EnrollmentBLL(db);
 
             // Main application loop flag
@@ -45,11 +50,11 @@ namespace HolmesglenStudentManager
                 {
                     case "1":
                         // Display the student operations submenu
-                        DisplayStudentMenu(studentBLL);
+                        studentUI.DisplayStudentMenu();
                         break;
                     case "2":
                         // Display the subject operations submenu
-                        DisplaySubjectMenu(subjectBLL);
+                        subjectUI.DisplaySubjectMenu();
                         break;
                     case "3":
                         // Display the enrollment operations submenu
@@ -77,286 +82,6 @@ namespace HolmesglenStudentManager
             // Display a thank you message when the application is about to close
             Console.WriteLine("Thank you for using Holmesglen Student Management System.");
         }
-
-        //static void TestSQLiteConnection()
-        //{
-        //    var sqliteDataAccess = new SQLiteDataAccess();
-        //    sqliteDataAccess.TestConnection();
-        //}
-        // Method to display the sutudent operations menu
-        static void DisplayStudentMenu(StudentBLL studentBLL)
-        {
-            // Flag to keep the student menu loop running
-            bool inStudentMenu = true;
-            while (inStudentMenu)
-            {
-                // Display the student operations sub-menu
-                Console.WriteLine("\nStudent Operations:");
-                Console.WriteLine("1) Create Student");
-                Console.WriteLine("2) List All Students");
-                Console.WriteLine("3) Update Student");
-                Console.WriteLine("4) Delete Student");
-                Console.WriteLine("5) Back to Main Menu");
-                Console.Write("Select an option: ");
-                // Read the user's choice from the console
-                var choice = Console.ReadLine();
-                switch (choice)
-                {
-                    case "1": // Option to create a new student
-                              // Prompt the user for student details and read the input
-                        Console.Write("Enter student ID: ");
-                        string studentId = Console.ReadLine();
-                        Console.Write("Enter first name: ");
-                        string firstName = Console.ReadLine();
-                        Console.Write("Enter last name: ");
-                        string lastName = Console.ReadLine();
-                        Console.Write("Enter email: ");
-                        string email = Console.ReadLine();
-                        // Create a new student object
-                        var newStudent = new Student
-                        {
-                            StudentId = studentId,
-                            FirstName = firstName,
-                            LastName = lastName,
-                            Email = email
-                        };
-                        // Add the new student to the database and display the result
-                        if (studentBLL.AddStudent(newStudent))
-                        {
-                            Console.WriteLine("Student added successfully!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Failed to add student. ID might already exist or input is invalid.");
-                        }
-                        break;
-                    case "2": // Option to list all students
-                              // Retrieve all students from the database and display their information
-                        var allStudents = studentBLL.GetAllStudents();
-                        foreach (var student in allStudents)
-                        {
-                            Console.WriteLine($"ID: {student.StudentId}, Name: {student.FirstName} {student.LastName}, Email: {student.Email}");
-                        }
-                        break;
-                    case "3": // Option to update an existing student's information
-                              // Prompt the user for the ID of the student to update
-                        Console.Write("Enter student ID to update: ");
-                        string updateId = Console.ReadLine();
-                        // Retrieve the student from the database
-                        var studentToUpdate = studentBLL.GetStudentById(updateId);
-                        if (studentToUpdate != null)
-                        {
-                            // Read the new values for the student's details, allowing the user to leave fields blank to keep them unchanged
-                            Console.Write("Enter new first name (leave blank to keep current): ");
-                            studentToUpdate.FirstName = Console.ReadLine();
-                            Console.Write("Enter new last name (leave blank to keep current): ");
-                            studentToUpdate.LastName = Console.ReadLine();
-                            Console.Write("Enter new email (leave blank to keep current): ");
-                            studentToUpdate.Email = Console.ReadLine();
-                            // Update the student in the database and display the result
-                            if (studentBLL.UpdateStudent(studentToUpdate))
-                            {
-                                Console.WriteLine("Student updated successfully!");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Failed to update student.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Student not found."); // Inform the user if the requested student does not exist
-                        }
-                        break;
-                    case "4": // Option to delete a student
-                              // Prompt the user for the ID of the student to delete
-                        Console.Write("Enter student ID to delete: ");
-                        string deleteId = Console.ReadLine();
-                        // Delete the student from the database and display the result
-                        if (studentBLL.DeleteStudent(deleteId))
-                        {
-                            Console.WriteLine("Student deleted successfully!"); // Confirmation message for successful deletion
-                        }
-                        else
-                        {
-                            Console.WriteLine("Failed to delete student or student not found."); // Error message for failed deletion or when the student does not exist
-                        }
-                        break;
-                    case "5":
-                        // Exit the student menu and return to the main menu
-                        inStudentMenu = false;
-                        break;
-                    default:
-                        // Message displayed when an unknown option is selected
-                        Console.WriteLine("Invalid option, please try again.");
-                        break;
-                }
-            }
-        }
-        // Method to display the subject operations menu
-        static void DisplaySubjectMenu(SubjectBLL subjectBLL)
-        {
-            // Flag to control the display of the subject menu
-            bool inSubjectMenu = true;
-            while (inSubjectMenu) // Loop to keep the subject menu active
-            {
-                // Display the available subject operations to the user
-                Console.WriteLine("\nSubject Operations:");
-                Console.WriteLine("1) Create Subject");
-                Console.WriteLine("2) List All Subjects");
-                Console.WriteLine("3) Update Subject");
-                Console.WriteLine("4) Delete Subject");
-                Console.WriteLine("5) Back to Main Menu");
-                Console.Write("Select an option: ");
-                // Read the user's menu selection from the console
-                var choice = Console.ReadLine();
-                switch (choice)
-                {
-                    case "1": // Option to create a new subject
-                              // Prompt for and read subject details from the user
-                        Console.Write("Enter subject ID: ");
-                        string subjectId = Console.ReadLine();
-                        Console.Write("Enter subject title: ");
-                        string title = Console.ReadLine();
-                        // Validation for the number of sessions
-                        Console.Write("Enter number of sessions: ");
-                        int numberOfSession;
-                        while (!int.TryParse(Console.ReadLine(), out numberOfSession))
-                        {
-                            Console.Write("Invalid input - please enter a valid number of sessions: ");
-                        }
-                        // Validation for the hours per session
-                        Console.Write("Enter hours per session: ");
-                        int hourPerSession;
-                        while (!int.TryParse(Console.ReadLine(), out hourPerSession))
-                        {
-                            Console.Write("Invalid input - please enter a valid number of hours per session: ");
-                        }
-                        // Create and populate a new Subject object with the provided information
-                        var newSubject = new Subject
-                        {
-                            SubjectId = subjectId,
-                            Title = title,
-                            NumberOfSession = numberOfSession, // Added property
-                            HourPerSession = hourPerSession // Added property
-                        };
-                        // Attempt to add the new subject to the database using the SubjectBLL
-                        if (subjectBLL.AddSubject(newSubject))
-                        {
-                            Console.WriteLine("Subject added successfully!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Failed to add subject. ID might already exist or input is invalid.");
-                        }
-                        break;
-                    case "2": // Option to list all subjects
-                              // Retrieve all subjects from the database
-                        var allSubjects = subjectBLL.GetAllSubjects();
-                        // Display each subject's detail
-                        foreach (var subject in allSubjects)
-                        {
-                            Console.WriteLine($"ID: {subject.SubjectId}, Title: {subject.Title}, " +
-                            $"Sessions: {subject.NumberOfSession}, Hours/Session: {subject.HourPerSession}");
-                        }
-                        break;
-                    case "3": // Option to update a subject's information
-                              // Prompt for and read the subject ID to update from the user
-                        Console.Write("Enter subject ID to update: ");
-                        string updateId = Console.ReadLine();
-                        // Attempt to retrieve the subject to update based on the provided ID
-                        var subjectToUpdate = subjectBLL.GetSubjectById(updateId);
-                        if (subjectToUpdate != null)
-                        {
-                            // Prompt the user for a new title and read the input. Allow retention of the current title if the input is blank.
-                            Console.Write("Enter new title (leave blank to keep current): ");
-                            var newTitle = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(newTitle))
-                            {
-                                subjectToUpdate.Title = newTitle; // Assign the new title if input is provided
-                            }
-
-                            // Prompt the user for a new number of sessions. Only apply the change if the input is a valid integer.
-                            Console.Write("Enter new number of sessions (leave blank to keep current): ");
-                            var newNumberOfSessionsStr = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(newNumberOfSessionsStr))
-                            {
-                                if (int.TryParse(newNumberOfSessionsStr, out var newNumberOfSession))
-                                {
-                                    subjectToUpdate.NumberOfSession = newNumberOfSession; // Assign the new number of sessions if input is valid
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid input for number of sessions."); // Notify the user of invalid input
-                                    break; // Exit the switch-case block
-                                }
-                            }
-
-                            // Prompt the user for new hours per session. Similarly, only apply the change if the input is valid.
-                            Console.Write("Enter new hours per session (leave blank to keep current): ");
-                            var newHoursPerSessionStr = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(newHoursPerSessionStr))
-                            {
-                                if (int.TryParse(newHoursPerSessionStr, out var newHourPerSession))
-                                {
-                                    subjectToUpdate.HourPerSession = newHourPerSession; // Assign the new hours per session if input is valid
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid input for hours per session."); // Notify the user of invalid input
-                                    break; // Exit the switch-case block
-                                }
-                            }
-
-                            // Attempt to update the subject using the Business Logic Layer, and notify the user about the outcome
-                            if (subjectBLL.UpdateSubject(subjectToUpdate))
-                            {
-                                Console.WriteLine("Subject updated successfully!");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Failed to update subject."); // This indicates an error during the update process
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Subject not found."); // Notify the user if the subject with the supplied ID was not found
-                        }
-                        break; // End the case block
-
-                        
-                        case "4": // Option to delete a subject
-                                  // Prompt the user to enter the ID of the subject they wish to delete
-                                    Console.Write("Enter subject ID to delete: ");
-                                    string deleteId = Console.ReadLine();
-
-                                    // Call the DeleteSubject method in the subjectBLL to attempt to delete the subject with the provided ID
-                                    if (subjectBLL.DeleteSubject(deleteId))
-                                    {
-                                        // If the deletion is successful, inform the user
-                                        Console.WriteLine("Subject deleted successfully!");
-                                    }
-                                    else
-                                    {
-                                        // If the deletion fails because the subject couldn't be found or another reason, inform the user
-                                        Console.WriteLine("Failed to delete subject or subject not found.");
-                                    }
-                                    break;
-
-                                case "5": // Option to return to the main menu
-                                          // Set inSubjectMenu to false to exit the submenu and go back to the main menu
-                                    inSubjectMenu = false;
-                                    break;
-
-                                default:
-                                    // If the user enters an option that is not recognized, prompt them to try entering a valid option again
-                                    Console.WriteLine("Invalid option, please try again.");
-                                    break;
-                                }
-            }
-
-        }
-        // Method to display the enrollment operations menu
         static void DisplayEnrollmentMenu(EnrollmentBLL enrollmentBLL, StudentBLL studentBLL, SubjectBLL subjectBLL)
         {
             bool inEnrollmentMenu = true;
@@ -375,16 +100,27 @@ namespace HolmesglenStudentManager
                 switch (choice)
                 {
                     case "1": // Option to enroll a student in a subject
-                        Console.Write("Enter student ID: "); // Prompt for student ID
-                        string studentId = Console.ReadLine(); // Read student ID
-                        Console.Write("Enter subject ID: "); // Prompt for subject ID
-                        string subjectId = Console.ReadLine(); // Read subject ID
-                                                               // Create a new Enrollment object with provided student and subject IDs
+                        Console.Write("Enter student ID (number): ");
+                        if (!int.TryParse(Console.ReadLine(), out int studentId))
+                        {
+                            Console.WriteLine("Invalid input. Please enter a valid number for student ID.");
+                            return;  // 整数以外の入力をした場合は早期にメソッドから抜けます
+                        }
+
+                        Console.Write("Enter subject ID (number): ");
+                        if (!int.TryParse(Console.ReadLine(), out int subjectId))
+                        {
+                            Console.WriteLine("Invalid input. Please enter a valid number for subject ID.");
+                            return;  // 整数以外の入力をした場合は早期にメソッドから抜けます
+                        }
+
+                        // studentIdとsubjectIdをint型でオブジェクトにセット
                         var newEnrollment = new Enrollment
                         {
                             StudentID_FK = studentId,
                             SubjectID_FK = subjectId
                         };
+
                         // Try adding the new enrollment using EnrollmentBLL and inform user of the result
                         if (enrollmentBLL.AddEnrollment(newEnrollment))
                         {
@@ -419,36 +155,54 @@ namespace HolmesglenStudentManager
                                 Console.WriteLine($"Current Student ID: {enrollmentToUpdate.StudentID_FK}, Current Subject ID: {enrollmentToUpdate.SubjectID_FK}");
 
                                 Console.Write("Enter new student ID (leave blank for no change): ");
-                                var newStudentId = Console.ReadLine();
-                                if (!string.IsNullOrEmpty(newStudentId))
+                                var newStudentIdInput = Console.ReadLine();
+                                if (!string.IsNullOrEmpty(newStudentIdInput))
                                 {
-                                    var student = studentBLL.GetStudentById(newStudentId);
-                                    if (student != null)
+                                    if (int.TryParse(newStudentIdInput, out int newStudentId)) // 新しい学生IDをint型としてパース
                                     {
-                                        enrollmentToUpdate.StudentID_FK = newStudentId;
+                                        var student = studentBLL.GetStudentById(newStudentId);
+                                        if (student != null)
+                                        {
+                                            enrollmentToUpdate.StudentID_FK = newStudentId; // 更新をint型の新しいIDで行う
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Invalid student ID. No student found with that ID.");
+                                            break;
+                                        }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Invalid student ID.");
+                                        Console.WriteLine("Invalid student ID. Please enter a numeric value.");
                                         break;
                                     }
                                 }
 
                                 Console.Write("Enter new subject ID (leave blank for no change): ");
-                                var newSubjectId = Console.ReadLine();
-                                if (!string.IsNullOrEmpty(newSubjectId))
+
+                                var newSubjectIdInput = Console.ReadLine();
+                                if (!string.IsNullOrEmpty(newSubjectIdInput))
                                 {
-                                    var subject = subjectBLL.GetSubjectById(newSubjectId);
-                                    if (subject != null)
+                                    if (int.TryParse(newSubjectIdInput, out int newSubjectId)) // 新しい科目IDをint型としてパース
                                     {
-                                        enrollmentToUpdate.SubjectID_FK = newSubjectId;
+                                        var subject = subjectBLL.GetSubjectById(newSubjectId);
+                                        if (subject != null)
+                                        {
+                                            enrollmentToUpdate.SubjectID_FK = newSubjectId; // 更新をint型の新しいIDで行う
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Invalid subject ID. No subject found with that ID.");
+                                            break;
+                                        }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Invalid subject ID.");
+                                        Console.WriteLine("Invalid subject ID. Please enter a numeric value.");
                                         break;
                                     }
                                 }
+                                // 同様に
                                 if (enrollmentBLL.UpdateEnrollment(enrollmentToUpdate, studentBLL, subjectBLL))
                                 {
                                     Console.WriteLine("Enrollment updated successfully.");
@@ -508,6 +262,7 @@ namespace HolmesglenStudentManager
                 }
             }
         }
+
         // Method to import student data from CSV
         static void ImportStudentsFromCsv(StudentBLL studentBLL)
         {
@@ -550,21 +305,27 @@ namespace HolmesglenStudentManager
         // Method to export student data to CSV
         static void ExportStudentsToCsv(StudentBLL studentBLL)
         {
+            // Ask the user to enter the full path to the CSV file to be exported.
             Console.Write("Enter the full path for the CSV file to export: ");
             string csvFilePath = Console.ReadLine();
 
             try
             {
+                // Open a file writer at the given path and pass it to the CSV writer
                 using (var writer = new StreamWriter(csvFilePath))
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
+                    // Get all student data through StudentBLL
                     var students = studentBLL.GetAllStudents();
+                    // Write acquired data to CSV file
                     csv.WriteRecords(students);
                 }
+                // Tell the user that all student data has been successfully exported
                 Console.WriteLine("Students exported successfully.");
             }
             catch (Exception ex)
             {
+                // If an error occurs during the export process, display it in the console
                 Console.WriteLine("An error occurred while exporting students: " + ex.Message);
             }
         }

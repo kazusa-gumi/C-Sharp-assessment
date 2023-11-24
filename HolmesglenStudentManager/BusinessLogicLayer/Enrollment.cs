@@ -120,5 +120,7 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
             }
             return false; // 登録が見つからないため、削除失敗
         }
+
+
     }
 }
