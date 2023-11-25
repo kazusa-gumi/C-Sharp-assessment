@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "d9byUx3wPWOVzB3rDegA1u4D020XhaXnAkS4z7nrKn/6qK8ZJjOgoL9FrS/4rAIscnCYFccX1N+vsLunnqRUHA==",
+  "dgSpecHash": "4jNQyzgRCzlZoBejsyijRO2IzqifaSMzq6kwRosvL7Il4wD/G8hVZlzGgVW0IL9k69uhBv8njPBJzvrz0pXgjg==",
   "success": true,
   "projectFilePath": "/Users/naoikazusa/Desktop/HolmesglenStudentManager/HolmesglenStudentManager/HolmesglenStudentManager.csproj",
   "expectedPackageFiles": [
@@ -30,6 +30,7 @@
     "/Users/naoikazusa/.nuget/packages/microsoft.netcore.platforms/3.1.0/microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "/Users/naoikazusa/.nuget/packages/microsoft.win32.registry/4.7.0/microsoft.win32.registry.4.7.0.nupkg.sha512",
     "/Users/naoikazusa/.nuget/packages/microsoft.win32.systemevents/4.7.0/microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "/Users/naoikazusa/.nuget/packages/mstest.testframework/3.1.1/mstest.testframework.3.1.1.nupkg.sha512",
     "/Users/naoikazusa/.nuget/packages/runtime.native.system.data.sqlclient.sni/4.7.0/runtime.native.system.data.sqlclient.sni.4.7.0.nupkg.sha512",
     "/Users/naoikazusa/.nuget/packages/runtime.win-arm64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "/Users/naoikazusa/.nuget/packages/runtime.win-x64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-x64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
