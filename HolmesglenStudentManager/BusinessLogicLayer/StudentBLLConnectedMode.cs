@@ -93,5 +93,40 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
                 return false;
             }
         }
+
+        public bool ImportStudentsFromCsv(string csvFilePath)
+        {
+            try
+            {
+                var studentsToImport = _studentDal.ReadStudentsFromCsv(csvFilePath);
+
+                foreach (var student in studentsToImport)
+                {
+                    _studentDal.AddOrUpdateStudent(student);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ImportStudentsFromCsv: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool ExportStudentsToCsv(string csvFilePath)
+        {
+            try
+            {
+                var students = GetAllStudents(); 
+
+                return _studentDal.ExportStudentsToCsv(students, csvFilePath);
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"Error in ExportStudentsToCsv: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

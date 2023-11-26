@@ -25,7 +25,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
 
         public Subject GetSubjectById(int id)
         {
-            // id を int 型として扱うよう修正
             return _subjectDal.GetSubjectById(id);
         }
 
@@ -41,7 +40,7 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
 
         public bool UpdateSubject(Subject subject)
         {
-            if (_subjectDal.GetSubjectById(subject.SubjectId) != null) // stringからintへ変更
+            if (_subjectDal.GetSubjectById(subject.SubjectId) != null)
             {
                 _subjectDal.UpdateSubject(subject);
                 return true;
@@ -49,7 +48,7 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
             return false;
         }
 
-        public bool DeleteSubject(int id) // stringからintへ変更
+        public bool DeleteSubject(int id) 
         {
             if (_subjectDal.GetSubjectById(id) != null)
             {

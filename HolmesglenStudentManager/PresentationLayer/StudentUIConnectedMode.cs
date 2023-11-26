@@ -19,7 +19,9 @@ namespace HolmesglenStudentManager.PresentationLayer {
                 Console.WriteLine("2) List All Students");
                 Console.WriteLine("3) Update Student");
                 Console.WriteLine("4) Delete Student");
-                Console.WriteLine("5) Back to Main Menu");
+                Console.WriteLine("5) Import CSV");
+                Console.WriteLine("6) Export CSV");
+                Console.WriteLine("7) Back to Main Menu");
                 Console.Write("Select an option: ");
                 var choice = Console.ReadLine();
                 switch (choice) {
@@ -36,6 +38,12 @@ namespace HolmesglenStudentManager.PresentationLayer {
                         DeleteStudent();
                         break;
                     case "5":
+                        ImportStudentsFromCsv();
+                        break;
+                    case "6":
+                        ExportStudentsToCsv();
+                        break;
+                    case "7":
                         inStudentMenu = false;
                         break;
                     default:
@@ -58,7 +66,7 @@ namespace HolmesglenStudentManager.PresentationLayer {
             string email = Console.ReadLine();
             var newStudent = new Student
             {
-                StudentId = studentId,
+                    StudentId = studentId,
                     FirstName = firstName,
                     LastName = lastName,
                     Email = email
@@ -127,6 +135,38 @@ namespace HolmesglenStudentManager.PresentationLayer {
             }
             else {
                 Console.WriteLine("Failed to delete student or student not found.");
+            }
+        }
+
+        public void ImportStudentsFromCsv()
+        {
+            Console.Write("Enter the full path to the CSV file to import: ");
+            string csvFilePath = Console.ReadLine();
+
+            bool success = _studentBLL.ImportStudentsFromCsv(csvFilePath);
+            if (success)
+            {
+                Console.WriteLine("Students imported successfully.");
+            }
+            else
+            {
+                Console.WriteLine("An error occurred while importing students.");
+            }
+        }
+
+        private void ExportStudentsToCsv()
+        {
+            Console.Write("Enter the full path for the CSV file to export: ");
+            string csvFilePath = Console.ReadLine();
+
+            bool success = _studentBLL.ExportStudentsToCsv(csvFilePath);
+            if (success)
+            {
+                Console.WriteLine("Students exported successfully.");
+            }
+            else
+            {
+                Console.WriteLine("An error occurred while exporting students.");
             }
         }
     }

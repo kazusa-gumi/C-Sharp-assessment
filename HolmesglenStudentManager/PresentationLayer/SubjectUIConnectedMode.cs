@@ -3,6 +3,8 @@ using HolmesglenStudentManager.Models;
 using HolmesglenStudentManager.BusinessLogicLayer;
 
 using System;
+using System.Xml.Linq;
+
 namespace HolmesglenStudentManager.PresentationLayer
 {
     public class SubjectUIConnectedMode
@@ -50,7 +52,7 @@ namespace HolmesglenStudentManager.PresentationLayer
                 }
             }
         }
-        private void CreateSubject()
+        public void CreateSubject()
         {
             Console.Write("Enter subject ID (number): ");
             if (!int.TryParse(Console.ReadLine(), out int subjectId))
@@ -89,7 +91,7 @@ namespace HolmesglenStudentManager.PresentationLayer
                 Console.WriteLine("Failed to add subject. ID might already exist or input is invalid.");
             }
         }
-        private void ListSubject()
+        public void ListSubject()
         {
             var subjects = _subjectBLL.GetAllSubjects();
             foreach (var subject in subjects)
@@ -98,7 +100,7 @@ namespace HolmesglenStudentManager.PresentationLayer
             }
         }
 
-        private void UpdateSubject()
+        public virtual void UpdateSubject()
         {
             Console.Write("Enter subject ID to update (number): ");
             if (!int.TryParse(Console.ReadLine(), out int subjectId))
@@ -116,6 +118,11 @@ namespace HolmesglenStudentManager.PresentationLayer
 
             Console.Write("Enter new title (leave blank to keep current): ");
             var title = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                subjectToUpdate.Title = title; 
+            }
+
             Console.Write("Enter new number of sessions (leave blank to keep current): ");
             if (int.TryParse(Console.ReadLine(), out int newNumberOfSessions))
             {
@@ -127,7 +134,6 @@ namespace HolmesglenStudentManager.PresentationLayer
                 subjectToUpdate.HourPerSession = newHoursPerSession;
             }
 
-            // SubjectBLLを通じて科目情報を更新し、結果をユーザーに報告
             bool updated = _subjectBLL.UpdateSubject(subjectToUpdate);
             if (updated)
             {
@@ -140,7 +146,7 @@ namespace HolmesglenStudentManager.PresentationLayer
         }
 
 
-        private void DeleteSubject()
+        public void DeleteSubject()
         {
             Console.Write("Enter subject ID to delete (number): ");
             if (!int.TryParse(Console.ReadLine(), out int id))

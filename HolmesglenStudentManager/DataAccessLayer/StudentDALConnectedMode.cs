@@ -2,6 +2,8 @@
 using System.Data.SQLite;
 using System.Collections.Generic;
 using HolmesglenStudentManager.Models;
+using CsvHelper;
+using System.Globalization;
 
 namespace HolmesglenStudentManager.DataAccess
 {
@@ -104,5 +106,58 @@ namespace HolmesglenStudentManager.DataAccess
                 return command.ExecuteNonQuery() > 0;
             }
         }
+
+        public List<Student> ReadStudentsFromCsv(string csvFilePath)
+        {
+            using (var reader = new StreamReader(csvFilePath))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                return csv.GetRecords<Student>().ToList();
+            }
+        }
+        public void AddOrUpdateStudent(Student student)
+        {
+            var existingStudent = GetStudentById(student.StudentId);
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Open();
+                if (existingStudent != null)
+                {
+                    var command = new SQLiteCommand("UPDATE Student SET FirstName = @FirstName, LastName = @LastName, Email = @Email WHERE StudentId = @StudentId", connection);
+                    command.Parameters.AddWithValue("@StudentId", student.StudentId);
+                    command.Parameters.AddWithValue("@FirstName", student.FirstName);
+                    command.Parameters.AddWithValue("@LastName", student.LastName);
+                    command.Parameters.AddWithValue("@Email", student.Email);
+                    command.ExecuteNonQuery();
+                }
+                else
+                {
+                    var command = new SQLiteCommand("INSERT INTO Student (StudentId, FirstName, LastName, Email) VALUES (@StudentId, @FirstName, @LastName, @Email)", connection);
+                    command.Parameters.AddWithValue("@StudentId", student.StudentId);
+                    command.Parameters.AddWithValue("@FirstName", student.FirstName);
+                    command.Parameters.AddWithValue("@LastName", student.LastName);
+                    command.Parameters.AddWithValue("@Email", student.Email);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public bool ExportStudentsToCsv(List<Student> students, string csvFilePath)
+        {
+            try
+            {
+                using (var writer = new StreamWriter(csvFilePath))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(students);
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
+
 }

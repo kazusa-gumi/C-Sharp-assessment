@@ -1,5 +1,7 @@
 ﻿using HolmesglenStudentManager.BusinessLogicLayer;
+using HolmesglenStudentManager.DataAccess;
 using HolmesglenStudentManager.Models;
+
 using System;
 
 namespace HolmesglenStudentManager.PresentationLayer
@@ -7,12 +9,13 @@ namespace HolmesglenStudentManager.PresentationLayer
     public class EnrollmentUIConnectedMode
     {
         private readonly EnrollmentBLLConnectedMode _enrollmentBLL;
+        private readonly SubjectBLLConnectedMode _subjectBLL;
 
-        public EnrollmentUIConnectedMode(EnrollmentBLLConnectedMode enrollmentBLL)
+        public EnrollmentUIConnectedMode(EnrollmentBLLConnectedMode enrollmentBLL, SubjectBLLConnectedMode subjectBLL)
         {
             _enrollmentBLL = enrollmentBLL;
+            _subjectBLL = subjectBLL;
         }
-
         public void DisplayEnrollmentMenu()
         {
             bool inEnrollmentMenu = true;
@@ -54,11 +57,16 @@ namespace HolmesglenStudentManager.PresentationLayer
             }
         }
 
-        private void AddEnrollment()
+        public bool ValidateSubjectId(int subjectId)
+        {
+            var subject = _subjectBLL.GetSubjectById(subjectId);
+            return subject != null;
+        }
+
+        public void AddEnrollment()
         {
             Console.WriteLine("Add New Enrollment");
 
-            // Prompt for and validate the Student ID
             Console.Write("Enter Student ID: ");
             if (!int.TryParse(Console.ReadLine(), out int studentId))
             {
@@ -73,19 +81,27 @@ namespace HolmesglenStudentManager.PresentationLayer
             bool addingMoreSubjects = true;
             while (addingMoreSubjects)
             {
-                // Prompt for and validate the Subject ID
                 Console.Write("Enter Subject ID (or 'done' to finish): ");
                 var input = Console.ReadLine();
 
+                // Check if the user has finished adding subjects
                 if (input.ToLower() == "done")
                 {
                     addingMoreSubjects = false;
                     continue;
                 }
 
-                if (!int.TryParse(input, out int subjectId))
+                // Validate the subject ID input
+                if (!int.TryParse(input, out int newSubjectId))
                 {
-                    Console.WriteLine("Invalid input. Please enter a valid number for Subject ID or 'done' to finish.");
+                    Console.WriteLine("Invalid input. Please enter a valid number for Subject ID, or 'done' to finish.");
+                    continue;
+                }
+
+                var subject = _subjectBLL.GetSubjectById(newSubjectId);
+                if (subject == null)
+                {
+                    Console.WriteLine($"Subject ID {newSubjectId} does not exist.");
                     continue;
                 }
 
@@ -93,41 +109,32 @@ namespace HolmesglenStudentManager.PresentationLayer
                 var newEnrollment = new Enrollment
                 {
                     StudentID_FK = studentId,
-                    SubjectID_FK = subjectId
+                    SubjectID_FK = newSubjectId
                 };
 
                 // Add the enrollment through the BLL
                 bool isCreated = _enrollmentBLL.AddEnrollment(newEnrollment);
                 if (isCreated)
                 {
-                    // Fetch the subject details if needed
-                    var subjectDetails = _enrollmentBLL.GetSubjectById(subjectId); // Assuming this method exists and fetches subject details.
-                    successfullyAddedSubjects.Add($"{subjectDetails.Title} ({subjectDetails.SubjectId})");
-                    Console.WriteLine($"Subject ID {subjectId} added successfully.");
+                    successfullyAddedSubjects.Add($"{subject.Title} (ID: {subject.SubjectId})");
+                    Console.WriteLine($"Subject ID {newSubjectId} added successfully.");
                 }
                 else
                 {
-                    Console.WriteLine($"Failed to add subject ID {subjectId}. It might already be enrolled.");
+                    Console.WriteLine($"Failed to add subject ID {newSubjectId}. It might already be enrolled or another error occurred.");
                 }
             }
 
-            // After all subjects are processed, display the confirmation message
-            if (successfullyAddedSubjects.Any())
-            {
-                Console.WriteLine($"Dear Student {studentId},\n");
-                Console.WriteLine("You have been enrolled in the following subject:");
-                foreach (var subject in successfullyAddedSubjects)
-                {
-                    Console.WriteLine($"> {subject}");
-                }
-                Console.WriteLine("\nPlease login to your account and confirm the above enrolments.\n");
-                Console.WriteLine("Regards,");
-                Console.WriteLine("CAIT Department");
-            }
-            else
-            {
-                Console.WriteLine("No enrollments were added.");
-            }
+        if (successfullyAddedSubjects.Count > 0)
+        {
+            var emailMessage = _enrollmentBLL.GenerateEnrollmentEmail(studentId, successfullyAddedSubjects);
+            Console.WriteLine("\nEnrollment Confirmation Email:");
+            Console.WriteLine(emailMessage);
+        }
+        else
+        {
+            Console.WriteLine("No new enrollments were added.");
+        }
         }
 
         private void ListEnrollments()
@@ -143,7 +150,6 @@ namespace HolmesglenStudentManager.PresentationLayer
         {
             Console.WriteLine("Update Enrollment Information");
 
-            // 登録IDの入力を求める
             Console.Write("Enter Enrollment ID to update: ");
             if (!int.TryParse(Console.ReadLine(), out int enrollmentId))
             {
@@ -151,31 +157,32 @@ namespace HolmesglenStudentManager.PresentationLayer
                 return;
             }
 
-            // 既存の登録情報を取得
             var existingEnrollment = _enrollmentBLL.GetEnrollmentById(enrollmentId);
             if (existingEnrollment == null)
             {
                 Console.WriteLine("Enrollment not found.");
                 return;
             }
-
-            // 新しい学生IDの入力を求める
             Console.Write("Enter new Student ID (leave blank to keep current): ");
             var studentIdInput = Console.ReadLine();
-            if (int.TryParse(studentIdInput, out int newStudentId))
+            if (!string.IsNullOrWhiteSpace(studentIdInput) && int.TryParse(studentIdInput, out int newStudentId))
             {
                 existingEnrollment.StudentID_FK = newStudentId;
             }
 
-            // 新しい科目IDの入力を求める
             Console.Write("Enter new Subject ID (leave blank to keep current): ");
             var subjectIdInput = Console.ReadLine();
-            if (int.TryParse(subjectIdInput, out int newSubjectId))
+            if (!string.IsNullOrWhiteSpace(subjectIdInput) && int.TryParse(subjectIdInput, out int newSubjectId))
             {
+                var subject = _subjectBLL.GetSubjectById(newSubjectId);
+                if (subject == null)
+                {
+                    Console.WriteLine($"Subject ID {newSubjectId} does not exist.");
+                    return;
+                }
                 existingEnrollment.SubjectID_FK = newSubjectId;
             }
 
-            // 更新処理の実行
             bool updated = _enrollmentBLL.UpdateEnrollment(existingEnrollment);
             if (updated)
             {
@@ -186,7 +193,6 @@ namespace HolmesglenStudentManager.PresentationLayer
                 Console.WriteLine("Failed to update enrollment.");
             }
         }
-
 
         private void DeleteEnrollment()
         {

@@ -14,7 +14,7 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
             _subjectDal = subjectDal;
         }
 
-        public List<Subject> GetAllSubjects()
+        public virtual List<Subject> GetAllSubjects()
         {
             try
             {
@@ -40,7 +40,7 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
             }
         }
 
-        public bool AddSubject(Subject newSubject)
+        public virtual bool AddSubject(Subject newSubject)
         {
             try
             {
@@ -59,9 +59,10 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
                 Console.WriteLine($"Error in AddSubject: {ex.Message}");
                 return false;
             }
+            
         }
 
-        public bool UpdateSubject(Subject existingSubject)
+        public virtual bool UpdateSubject(Subject existingSubject)
         {
             try
             {
@@ -74,7 +75,7 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
             }
         }
 
-        public bool DeleteSubject(int subjectId)
+        public virtual bool DeleteSubject(int subjectId)
         {
             try
             {

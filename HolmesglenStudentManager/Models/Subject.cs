@@ -6,8 +6,8 @@ namespace HolmesglenStudentManager.Models
     {
         public int SubjectId { get; set; }
         public string Title { get; set; }
-        public int NumberOfSession { get; set; } // 新しいプロパティ追加
-        public int HourPerSession { get; set; } // 新しいプロパティ追加
+        public int NumberOfSession { get; set; } 
+        public int HourPerSession { get; set; }
 
     }
 }

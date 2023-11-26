@@ -24,12 +24,12 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // DALを使用してすべての登録を取得
+                
                 return _enrollmentDal.GetAllEnrollments();
             }
             catch (Exception ex)
             {
-                // エラーハンドリング
+               
                 Console.WriteLine($"Error in GetAllEnrollments: {ex.Message}");
                 return new List<Enrollment>();
             }
@@ -39,7 +39,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // 特定のIDを持つ登録を取得
                 return _enrollmentDal.GetEnrollmentById(id);
             }
             catch (Exception ex)
@@ -53,8 +52,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // 登録の有効性を検証するロジックを追加することができます
-                // 例: 学生IDと科目IDの有効性チェック
                 return _enrollmentDal.AddEnrollment(newEnrollment);
             }
             catch (Exception ex)
@@ -68,7 +65,7 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // 登録情報の更新
+
                 return _enrollmentDal.UpdateEnrollment(existingEnrollment);
             }
             catch (Exception ex)
@@ -82,7 +79,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // 登録の削除
                 return _enrollmentDal.DeleteEnrollment(enrollmentId);
             }
             catch (Exception ex)
@@ -103,6 +99,17 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
                 Console.WriteLine($"Error in GetAllEnrollmentDetails: {ex.Message}");
                 return new List<EnrollmentDetail>();
             }
+        }
+
+        public string GenerateEnrollmentEmail(int studentId, List<string> subjects)
+        {
+            var emailMessage = $"Dear Student {studentId},\n\n"
+                             + "You have been enrolled in the following subjects:\n"
+                             + String.Join("\n", subjects.Select(s => $"- {s}"))
+                             + "\n\nPlease log in to your account to confirm these enrollments.\n"
+                             + "Regards,\n"
+                             + "The Enrollment Department";
+            return emailMessage;
         }
 
     }

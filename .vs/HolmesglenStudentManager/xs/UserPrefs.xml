@@ -1,4 +1,49 @@
 ﻿<Properties StartupConfiguration="{3E27895B-E21B-43A6-B5ED-F60A467F8967}|Default">
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workbench ActiveDocument=".editorconfig">
+    <Files>
+      <File FileName="HolmesglenStudentManager/DataAccessLayer/EnrollmentDALConnectedMode.cs" Line="119" Column="97" />
+      <File FileName="HolmesglenStudentManager/BusinessLogicLayer/EnrollmentBLLConnectedMode.cs" Line="20" Column="61" />
+      <File FileName="HolmesglenStudentManager/PresentationLayer/EnrollmentUIConnectedMode.cs" Line="14" Column="10" />
+      <File FileName="HolmesglenStudentManager/Test/SubjectCRUDTest.cs" Line="13" Column="1" />
+      <File FileName="HolmesglenStudentManager/PresentationLayer/SubjectUIConnectedMode.cs" Line="14" Column="38" />
+      <File FileName="SubjectUnitTest/UnitTest/UnitTest1.cs" Line="40" Column="1" />
+      <File FileName=".editorconfig" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="HolmesglenStudentManager">
+            <Node name="ソリューション項目" expanded="True">
+              <Node name="UnitTest">
+                <Node name="ConnectedServicesFolder" selected="True" />
+              </Node>
+            </Node>
+            <Node name="HolmesglenStudentManager">
+              <Node name="BusinessLogicLayer" expanded="True" />
+              <Node name="DataAccessLayer" expanded="True" />
+              <Node name="Migrations" expanded="True" />
+              <Node name="Models" expanded="True" />
+              <Node name="Test" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="HolmesglenStudentManager" expanded="True">
+            <Node name="ソリューション項目" expanded="True">
+              <Node name="UnitTest" expanded="True" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.HolmesglenStudentManager PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

@@ -75,7 +75,6 @@ namespace HolmesglenStudentManager.PresentationLayer
                 Title = title,
                 NumberOfSession = numberOfSessions,
                 HourPerSession = hoursPerSession
-                // その他のプロパティについても同様に入力を受け付けます。
             };
 
             bool isCreated = _subjectBLL.AddSubject(newSubject);

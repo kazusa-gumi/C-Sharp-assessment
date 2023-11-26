@@ -82,7 +82,8 @@ namespace HolmesglenStudentManager.DataAccess
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 connection.Open();
-                var command = new SQLiteCommand("UPDATE Student SET Title = @Title, NumberOfSession = @NumberOfSession, HourPerSession = @HourPerSession WHERE SubjectId = @SubjectId", connection);
+                string query = "UPDATE Subject SET Title = @Title, NumberOfSession = @NumberOfSession, HourPerSession = @HourPerSession WHERE SubjectId = @SubjectId";
+                var command = new SQLiteCommand(query, connection);
                 command.Parameters.AddWithValue("@Title", subject.Title);
                 command.Parameters.AddWithValue("@NumberOfSession", subject.NumberOfSession);
                 command.Parameters.AddWithValue("@HourPerSession", subject.HourPerSession);

@@ -13,7 +13,6 @@ namespace HolmesglenStudentManager.DataAccess
             _context = context;
         }
 
-        // すべての科目を取得
         public List<Subject> GetAllSubjects()
         {
             return _context.Subject.ToList();
@@ -24,21 +23,19 @@ namespace HolmesglenStudentManager.DataAccess
             return _context.Subject.FirstOrDefault(s => s.SubjectId == id);
         }
 
-        // 新しい科目を追加
         public void AddSubject(Subject subject)
         {
             _context.Subject.Add(subject);
             _context.SaveChanges();
         }
 
-        // 存在する科目の情報を更新
+
         public void UpdateSubject(Subject subject)
         {
             _context.Subject.Update(subject);
             _context.SaveChanges();
         }
 
-        // 科目を削除
         public void DeleteSubject(int id)
         {
             var subject = GetSubjectById(id);
@@ -49,7 +46,6 @@ namespace HolmesglenStudentManager.DataAccess
             }
         }
 
-        // 科目IDが有効か検証
         public bool ValidateSubjectId(int subjectId)
         {
             return _context.Subject.Any(s => s.SubjectId == subjectId);
