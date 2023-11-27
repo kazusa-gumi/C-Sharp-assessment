@@ -58,10 +58,11 @@ namespace HolmesglenStudentManager.PresentationLayer {
                 Console.WriteLine("Invalid input. Please enter a valid number for student ID.");
                 return;
             }
-            Console.Write("Enter first name: ");
-            string firstName = Console.ReadLine();
+            
             Console.Write("Enter last name: ");
             string lastName = Console.ReadLine();
+            Console.Write("Enter first name: ");
+            string firstName = Console.ReadLine();
             Console.Write("Enter email: ");
             string email = Console.ReadLine();
             var newStudent = new Student

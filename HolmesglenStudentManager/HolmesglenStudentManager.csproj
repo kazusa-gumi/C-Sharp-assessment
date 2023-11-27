@@ -22,14 +22,12 @@
     <None Remove="BusinessLogicLayer\" />
     <None Remove="DataAccessLayer\" />
     <None Remove="PresentationLayer\" />
-    <None Remove="Test\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="BusinessLogicLayer\" />
     <Folder Include="DataAccessLayer\" />
     <Folder Include="PresentationLayer\" />
-    <Folder Include="Test\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" />

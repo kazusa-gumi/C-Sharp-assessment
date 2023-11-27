@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "SubjectUnitTest\UnitTest\UnitTest.csproj", "{51889D20-D4BE-4A3F-963A-9E179DD8B1BD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,10 +20,6 @@ Global
 		{3E27895B-E21B-43A6-B5ED-F60A467F8967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E27895B-E21B-43A6-B5ED-F60A467F8967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E27895B-E21B-43A6-B5ED-F60A467F8967}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51889D20-D4BE-4A3F-963A-9E179DD8B1BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51889D20-D4BE-4A3F-963A-9E179DD8B1BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51889D20-D4BE-4A3F-963A-9E179DD8B1BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51889D20-D4BE-4A3F-963A-9E179DD8B1BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -34,6 +28,5 @@ Global
 		SolutionGuid = {9CF51C14-67F9-4929-9191-97E7D3DB58BB}
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{51889D20-D4BE-4A3F-963A-9E179DD8B1BD} = {4374F171-7B47-4088-88A5-59C32D7064D2}
 	EndGlobalSection
 EndGlobal

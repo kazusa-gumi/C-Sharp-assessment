@@ -10,11 +10,13 @@ namespace HolmesglenStudentManager.PresentationLayer
     {
         private readonly EnrollmentBLLConnectedMode _enrollmentBLL;
         private readonly SubjectBLLConnectedMode _subjectBLL;
+        private readonly StudentBLLConnectedMode _studentBLL;
 
-        public EnrollmentUIConnectedMode(EnrollmentBLLConnectedMode enrollmentBLL, SubjectBLLConnectedMode subjectBLL)
+        public EnrollmentUIConnectedMode(EnrollmentBLLConnectedMode enrollmentBLL, SubjectBLLConnectedMode subjectBLL, StudentBLLConnectedMode studentBLL)
         {
             _enrollmentBLL = enrollmentBLL;
             _subjectBLL = subjectBLL;
+            _studentBLL = studentBLL;
         }
         public void DisplayEnrollmentMenu()
         {
@@ -27,7 +29,8 @@ namespace HolmesglenStudentManager.PresentationLayer
                 Console.WriteLine("3) Update Enrollment");
                 Console.WriteLine("4) Delete Enrollment");
                 Console.WriteLine("5) Generate a report for all enrollment information");
-                Console.WriteLine("6) Back to Main Menu");
+                Console.WriteLine("6) Generate an email to notify a student about their enrollment.");
+                Console.WriteLine("7) Back to Main Menu");
                 Console.Write("Select an option: ");
                 var choice = Console.ReadLine();
                 switch (choice)
@@ -48,6 +51,9 @@ namespace HolmesglenStudentManager.PresentationLayer
                         DisplayAllEnrollmentDetails();
                         break;
                     case "6":
+                        GenerateEnrollmentEmails();
+                        break;
+                    case "7":
                         inEnrollmentMenu = false;
                         break;
                     default:
@@ -74,24 +80,20 @@ namespace HolmesglenStudentManager.PresentationLayer
                 return;
             }
 
-            // Initialize a list to hold successfully added subjects
             var successfullyAddedSubjects = new List<string>();
 
-            // Loop to allow multiple subject enrollments
             bool addingMoreSubjects = true;
             while (addingMoreSubjects)
             {
                 Console.Write("Enter Subject ID (or 'done' to finish): ");
                 var input = Console.ReadLine();
 
-                // Check if the user has finished adding subjects
                 if (input.ToLower() == "done")
                 {
                     addingMoreSubjects = false;
                     continue;
                 }
 
-                // Validate the subject ID input
                 if (!int.TryParse(input, out int newSubjectId))
                 {
                     Console.WriteLine("Invalid input. Please enter a valid number for Subject ID, or 'done' to finish.");
@@ -105,14 +107,12 @@ namespace HolmesglenStudentManager.PresentationLayer
                     continue;
                 }
 
-                // Create a new Enrollment object
                 var newEnrollment = new Enrollment
                 {
                     StudentID_FK = studentId,
                     SubjectID_FK = newSubjectId
                 };
 
-                // Add the enrollment through the BLL
                 bool isCreated = _enrollmentBLL.AddEnrollment(newEnrollment);
                 if (isCreated)
                 {
@@ -125,16 +125,11 @@ namespace HolmesglenStudentManager.PresentationLayer
                 }
             }
 
-        if (successfullyAddedSubjects.Count > 0)
-        {
-            var emailMessage = _enrollmentBLL.GenerateEnrollmentEmail(studentId, successfullyAddedSubjects);
-            Console.WriteLine("\nEnrollment Confirmation Email:");
-            Console.WriteLine(emailMessage);
-        }
-        else
-        {
-            Console.WriteLine("No new enrollments were added.");
-        }
+            // Check if any subjects have been successfully added for the student
+            if (successfullyAddedSubjects.Any())
+            {
+                Console.WriteLine("A new enrollment has been successfully registered.");
+            }
         }
 
         private void ListEnrollments()
@@ -222,6 +217,42 @@ namespace HolmesglenStudentManager.PresentationLayer
             foreach (var detail in enrollmentDetails)
             {
                 Console.WriteLine($"Enrollment ID: {detail.EnrollmentId}, Student ID: {detail.StudentId}, Name: {detail.StudentName}, Subject ID: {detail.SubjectId}, Title: {detail.SubjectTitle}");
+            }
+        }
+
+        private void GenerateEnrollmentEmails()
+        {
+            // Presume there is a _studentBLL with a GetStudentById method
+            var enrollments = _enrollmentBLL.GetAllEnrollments();
+            var groupedEnrollments = enrollments.GroupBy(e => e.StudentID_FK).ToList();
+
+            foreach (var group in groupedEnrollments)
+            {
+                int studentId = group.Key;
+
+                // Retrieve the student details
+                var student = _studentBLL.GetStudentById(studentId);
+                if (student == null) continue; // Or handle this case as needed
+
+                var fullName = $"{student.FirstName} {student.LastName}"; // Adjust format as needed
+
+                var subjectsInfo = new List<string>();
+                foreach (var enrollment in group)
+                {
+                    var subject = _subjectBLL.GetSubjectById(enrollment.SubjectID_FK);
+                    if (subject != null)
+                    {
+                        subjectsInfo.Add($"{subject.Title} (ID: {subject.SubjectId})");
+                    }
+                }
+
+                if (subjectsInfo.Count > 0)
+                {
+                    // Use fullName instead of "Student 888"
+                    var emailMessage = _enrollmentBLL.GenerateEnrollmentEmail(fullName, subjectsInfo); // Adjust the signature of this method
+                    Console.WriteLine(emailMessage);
+                    Console.WriteLine("***************************************************************");
+                }
             }
         }
 

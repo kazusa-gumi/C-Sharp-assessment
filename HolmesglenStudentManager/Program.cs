@@ -31,8 +31,8 @@ namespace HolmesglenStudentManager
             var subjectUIConnectedMode = new SubjectUIConnectedMode(subjectBLLConnected);
 
             var enrollmentDalConnected = new EnrollmentDALConnectedMode(connectionString);
-            var enrollmentBLLConnected = new EnrollmentBLLConnectedMode(enrollmentDalConnected);
-            var enrollmentUIConnectedMode = new EnrollmentUIConnectedMode(enrollmentBLLConnected, subjectBLLConnected);
+            var enrollmentBLLConnected = new EnrollmentBLLConnectedMode(enrollmentDalConnected, studentDalConnected);
+            var enrollmentUIConnectedMode = new EnrollmentUIConnectedMode(enrollmentBLLConnected, subjectBLLConnected, studentBLLConnected);
 
             // EntityFrameWork Mode
             //var db = new AppDBContext();

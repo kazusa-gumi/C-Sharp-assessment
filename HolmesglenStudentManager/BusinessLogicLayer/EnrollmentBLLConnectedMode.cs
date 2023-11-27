@@ -8,12 +8,13 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
     public class EnrollmentBLLConnectedMode
     {
         private readonly EnrollmentDALConnectedMode _enrollmentDal;
+        private readonly StudentDALConnectedMode _studentDal;
 
-        public EnrollmentBLLConnectedMode(EnrollmentDALConnectedMode enrollmentDal)
+        public EnrollmentBLLConnectedMode(EnrollmentDALConnectedMode enrollmentDal, StudentDALConnectedMode studentDal)
         {
             _enrollmentDal = enrollmentDal;
+            _studentDal = studentDal;
         }
-
 
         public Subject GetSubjectById(int subjectId)
         {
@@ -101,16 +102,44 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
             }
         }
 
-        public string GenerateEnrollmentEmail(int studentId, List<string> subjects)
+        public string GenerateEnrollmentEmail(string studentFullName, List<string> subjects)
         {
-            var emailMessage = $"Dear Student {studentId},\n\n"
-                             + "You have been enrolled in the following subjects:\n"
-                             + String.Join("\n", subjects.Select(s => $"- {s}"))
-                             + "\n\nPlease log in to your account to confirm these enrollments.\n"
-                             + "Regards,\n"
-                             + "The Enrollment Department";
+            var emailMessage = $"Dear {studentFullName},\n\n" +
+                               "You have been enrolled in the following subjects:\n" +
+                               string.Join("\n", subjects.Select(s => $"- {s}")) +
+                               "\n\nPlease log in to your account to confirm these enrollments.\n" +
+                               "Regards,\n" +
+                               "The Enrollment Department";
             return emailMessage;
         }
 
+        // GenerateAndPrintEnrollmentEmailsメソッドの実装
+        public void GenerateAndPrintEnrollmentEmails()
+        {
+            var enrollments = GetAllEnrollments(); // すべてのEnrollmentを取得する
+            var groupedByStudentId = enrollments.GroupBy(e => e.StudentID_FK);
+
+            foreach (var studentGroup in groupedByStudentId)
+            {
+                int studentId = studentGroup.Key;
+
+                // StudentDALから学生のフルネームを取得します。
+                var student = _studentDal.GetStudentById(studentId);
+                var studentFullName = $"{student.LastName} {student.FirstName}";
+
+                List<string> subjectsInfo = studentGroup.Select(enrollment =>
+                {
+                    var subject = _enrollmentDal.GetSubjectById(enrollment.SubjectID_FK);
+                    return $"{subject.Title} (ID: {subject.SubjectId})";
+                }).ToList();
+
+                // 修正されたGenerateEnrollmentEmailを呼び出して、メール本文を取得します。
+                var emailMessage = GenerateEnrollmentEmail(studentFullName, subjectsInfo);
+
+                // メールメッセージをコンソールに出力します。
+                Console.WriteLine(emailMessage);
+                Console.WriteLine("************************************************************************************************************");
+            }
+        }
     }
 }

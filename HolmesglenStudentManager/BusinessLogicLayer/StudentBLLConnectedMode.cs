@@ -18,12 +18,10 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // DALを使用してすべての学生を取得
                 return _studentDal.GetAllStudents();
             }
             catch (Exception ex)
             {
-                // エラーハンドリング
                 Console.WriteLine($"Error in GetAllStudents: {ex.Message}");
                 return new List<Student>();
             }
@@ -33,7 +31,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // 特定のIDを持つ学生を取得
                 return _studentDal.GetStudentById(id);
             }
             catch (Exception ex)
@@ -47,8 +44,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // ここで学生の有効性を検証するロジックを追加することができます
-                // 例: IDの重複チェック
                 if (_studentDal.GetStudentById(newStudent.StudentId) == null)
                 {
                     return _studentDal.AddStudent(newStudent);
@@ -70,7 +65,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // 学生情報の更新
                 return _studentDal.UpdateStudent(existingStudent);
             }
             catch (Exception ex)
@@ -84,7 +78,6 @@ namespace HolmesglenStudentManager.BusinessLogicLayer
         {
             try
             {
-                // 学生の削除
                 return _studentDal.DeleteStudent(studentId);
             }
             catch (Exception ex)
